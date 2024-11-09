@@ -126,3 +126,15 @@ def identify_contact(payload: ContactPayload, db: Session = Depends(get_db)):
             linked_id=primary_contact.id,
             link_precedence=LinkPrecedence.SECONDARY
         )
+        db.add(new_secondary_contact)
+        db.commit()
+        db.refresh(new_secondary_contact)
+        secondary_ids.append(new_secondary_contact.id)
+        phone_numbers.add(payload.phone_number)
+
+    return ContactResponse(
+        primary_contact_id=primary_contact.id,
+        emails=list(emails),
+        phone_numbers=list(phone_numbers),
+        secondary_contact_ids=secondary_ids
+    )
